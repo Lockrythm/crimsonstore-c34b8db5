@@ -1,12 +1,14 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Key } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+
+const SIGNUP_KEY = "GCSAHIWAL04";
 
 const emailSchema = z.string().email("Invalid email address");
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
@@ -17,9 +19,10 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [signupKey, setSignupKey] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; username?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string; username?: string; signupKey?: string }>({});
   
   const { signIn, signUp, user, loading } = useAuth();
   const { toast } = useToast();
@@ -32,7 +35,7 @@ const Auth = () => {
   }, [user, loading, navigate]);
 
   const validateForm = () => {
-    const newErrors: { email?: string; password?: string; username?: string } = {};
+    const newErrors: { email?: string; password?: string; username?: string; signupKey?: string } = {};
     
     try {
       emailSchema.parse(email);
@@ -57,6 +60,10 @@ const Auth = () => {
         if (e instanceof z.ZodError) {
           newErrors.username = e.errors[0].message;
         }
+      }
+      
+      if (signupKey !== SIGNUP_KEY) {
+        newErrors.signupKey = "Invalid signup key";
       }
     }
     
@@ -143,24 +150,45 @@ const Auth = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              <label className="block text-sm text-muted-foreground mb-2">
-                <User size={14} className="inline mr-1" /> Username
-              </label>
-              <Input
-                placeholder="Your dark alias"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="bg-card border-border focus:border-primary"
-              />
-              {errors.username && (
-                <p className="text-destructive text-xs mt-1">{errors.username}</p>
-              )}
-            </motion.div>
+            <>
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+              >
+                <label className="block text-sm text-muted-foreground mb-2">
+                  <User size={14} className="inline mr-1" /> Username
+                </label>
+                <Input
+                  placeholder="Your dark alias"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="bg-card border-border focus:border-primary"
+                />
+                {errors.username && (
+                  <p className="text-destructive text-xs mt-1">{errors.username}</p>
+                )}
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+              >
+                <label className="block text-sm text-muted-foreground mb-2">
+                  <Key size={14} className="inline mr-1" /> Signup Key
+                </label>
+                <Input
+                  placeholder="Enter signup key"
+                  value={signupKey}
+                  onChange={(e) => setSignupKey(e.target.value)}
+                  className="bg-card border-border focus:border-primary"
+                />
+                {errors.signupKey && (
+                  <p className="text-destructive text-xs mt-1">{errors.signupKey}</p>
+                )}
+              </motion.div>
+            </>
           )}
 
           <div>
@@ -218,6 +246,7 @@ const Auth = () => {
             onClick={() => {
               setIsLogin(!isLogin);
               setErrors({});
+              setSignupKey("");
             }}
             className="text-sm text-muted-foreground hover:text-primary transition-colors"
           >

@@ -1,17 +1,23 @@
 import { motion } from "framer-motion";
-import { ShoppingCart, Trash2, Plus, Minus, MessageCircle } from "lucide-react";
+import { ShoppingCart, Trash2, Plus, Minus, MessageCircle, Truck } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 
 const ADMIN_PHONE = "923126203644"; // Pakistan format for WhatsApp
+const DELIVERY_FEE = 250;
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [homeDelivery, setHomeDelivery] = useState(false);
+
+  const finalTotal = homeDelivery ? totalPrice + DELIVERY_FEE : totalPrice;
 
   const generateOrderId = () => {
     const timestamp = Date.now().toString(36).toUpperCase();
@@ -29,7 +35,14 @@ const Cart = () => {
       message += `- ${item.title} — Rs ${item.price.toLocaleString()} × ${item.quantity}\n`;
     });
     
-    message += `\nTotal: Rs ${totalPrice.toLocaleString()}\n`;
+    message += `\nSubtotal: Rs ${totalPrice.toLocaleString()}\n`;
+    
+    if (homeDelivery) {
+      message += `Home Delivery: Rs ${DELIVERY_FEE}\n`;
+    }
+    
+    message += `\nTotal: Rs ${finalTotal.toLocaleString()}\n`;
+    message += `Delivery: ${homeDelivery ? "Home Delivery" : "Self Pickup"}\n`;
     message += `Order ID: ${orderId}\n`;
     message += `Username: ${username}`;
     
@@ -154,6 +167,29 @@ const Cart = () => {
           Clear Cart
         </Button>
 
+        {/* Home Delivery Option */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="bg-card rounded-xl p-4 border border-border mb-4"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Truck size={20} className="text-primary" />
+              <div>
+                <p className="font-medium text-foreground">Home Delivery</p>
+                <p className="text-sm text-muted-foreground">Rs {DELIVERY_FEE} delivery fee</p>
+              </div>
+            </div>
+            <Checkbox
+              checked={homeDelivery}
+              onCheckedChange={(checked) => setHomeDelivery(checked === true)}
+              className="h-5 w-5"
+            />
+          </div>
+        </motion.div>
+
         {/* Order Summary */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -166,6 +202,12 @@ const Cart = () => {
             <span>Subtotal</span>
             <span>Rs {totalPrice.toLocaleString()}</span>
           </div>
+          {homeDelivery && (
+            <div className="flex justify-between text-muted-foreground mb-2">
+              <span>Home Delivery</span>
+              <span>Rs {DELIVERY_FEE}</span>
+            </div>
+          )}
           <div className="flex justify-between text-muted-foreground mb-2">
             <span>Service Fee</span>
             <span className="text-sm">Handled by Admin</span>
@@ -174,7 +216,7 @@ const Cart = () => {
             <div className="flex justify-between text-foreground">
               <span className="font-semibold text-lg">Total</span>
               <span className="font-bold text-xl text-primary">
-                Rs {totalPrice.toLocaleString()}
+                Rs {finalTotal.toLocaleString()}
               </span>
             </div>
           </div>
