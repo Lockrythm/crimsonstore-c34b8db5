@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
-import { ShoppingCart, Trash2, Plus, Minus, MessageCircle, Truck } from "lucide-react";
+import { ShoppingCart, Trash2, Plus, Minus, MessageCircle, Truck, MapPin } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -16,6 +17,7 @@ const Cart = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [homeDelivery, setHomeDelivery] = useState(false);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
 
   const finalTotal = homeDelivery ? totalPrice + DELIVERY_FEE : totalPrice;
 
@@ -39,6 +41,7 @@ const Cart = () => {
     
     if (homeDelivery) {
       message += `Home Delivery: Rs ${DELIVERY_FEE}\n`;
+      message += `Delivery Address: ${deliveryAddress}\n`;
     }
     
     message += `\nTotal: Rs ${finalTotal.toLocaleString()}\n`;
@@ -184,10 +187,34 @@ const Cart = () => {
             </div>
             <Checkbox
               checked={homeDelivery}
-              onCheckedChange={(checked) => setHomeDelivery(checked === true)}
+              onCheckedChange={(checked) => {
+                setHomeDelivery(checked === true);
+                if (!checked) setDeliveryAddress("");
+              }}
               className="h-5 w-5"
             />
           </div>
+          
+          {/* Delivery Address Field */}
+          {homeDelivery && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-4"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <MapPin size={16} className="text-muted-foreground" />
+                <label className="text-sm font-medium text-foreground">Delivery Address</label>
+              </div>
+              <Input
+                placeholder="Enter your complete home address"
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                className="bg-background"
+              />
+            </motion.div>
+          )}
         </motion.div>
 
         {/* Order Summary */}
