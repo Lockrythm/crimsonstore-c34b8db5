@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowLeft, User, Bell, Shield, Palette, HelpCircle, Camera, Save, Moon, Sun } from "lucide-react";
+import { ArrowLeft, User, Bell, Shield, Palette, HelpCircle, Camera, Save, Moon, Sun, KeyRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ const Settings = () => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSendingPasswordReset, setIsSendingPasswordReset] = useState(false);
 
   // Initialize form with current profile data
   useEffect(() => {
@@ -57,16 +58,16 @@ const Settings = () => {
 
   const handleSaveProfile = async () => {
     if (!user) return;
-    
+
     setIsSaving(true);
     try {
       let newAvatarUrl = avatarUrl;
-      
+
       // Upload new avatar if selected
       if (avatarFile) {
         newAvatarUrl = await uploadProductImage(avatarFile, user.id);
       }
-      
+
       // Update profile in database
       const { error } = await supabase
         .from('profiles')
@@ -75,18 +76,18 @@ const Settings = () => {
           avatar_url: newAvatarUrl || null,
         })
         .eq('id', user.id);
-      
+
       if (error) throw error;
-      
+
       toast({
         title: "Profile updated",
         description: "Your changes have been saved.",
       });
-      
+
       setIsEditingProfile(false);
       setAvatarFile(null);
       setAvatarPreview(null);
-      
+
       // Refresh the page to show updated profile
       window.location.reload();
     } catch (error: any) {
@@ -100,6 +101,39 @@ const Settings = () => {
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!user?.email) {
+      toast({
+        title: "Email not available",
+        description: "Please sign in again to reset your password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSendingPasswordReset(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Reset link sent",
+        description: `A password reset link was sent to ${user.email}.`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Could not send reset link",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSendingPasswordReset(false);
+    }
+  };
+
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
@@ -109,8 +143,8 @@ const Settings = () => {
     setNotifications(checked);
     toast({
       title: checked ? "Notifications enabled" : "Notifications disabled",
-      description: checked 
-        ? "You will receive push notifications." 
+      description: checked
+        ? "You will receive push notifications."
         : "Push notifications have been turned off.",
     });
   };
@@ -247,6 +281,21 @@ const Settings = () => {
               </div>
             </div>
           )}
+
+          <div className="mt-4 border-t border-border pt-4 space-y-2">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={handlePasswordReset}
+              disabled={isSendingPasswordReset || !user?.email}
+            >
+              <KeyRound size={16} className="mr-2" />
+              {isSendingPasswordReset ? "Sending reset link..." : "Reset Password"}
+            </Button>
+            <p className="text-xs text-muted-foreground">
+              A secure reset link will be sent to your account email.
+            </p>
+          </div>
         </motion.div>
 
         {/* Notifications Section */}
