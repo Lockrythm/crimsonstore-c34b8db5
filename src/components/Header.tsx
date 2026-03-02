@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import BatIcon from "./icons/BatIcon";
 import CartIcon from "./CartIcon";
+import NotificationBell from "./NotificationBell";
 import headerBg from "@/assets/header-bg.jpg";
 
 const Header = () => {
@@ -15,8 +16,9 @@ const Header = () => {
       {/* Fog Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background" />
       
-      {/* Cart Icon - Top Right */}
-      <div className="absolute top-4 right-4 z-20">
+      {/* Actions - Top Right */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-1">
+        <NotificationBell />
         <CartIcon />
       </div>
       
