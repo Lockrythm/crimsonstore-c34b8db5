@@ -14,41 +14,38 @@ const getNotificationIcon = (title: string) => {
 const NotificationItem = ({ n, onRead }: { n: Notification; onRead: (id: string) => void }) => (
   <motion.div
     layout
-    initial={{ opacity: 0, x: 20 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: -20 }}
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -8 }}
     transition={{ type: "spring", stiffness: 400, damping: 30 }}
-    className={`p-3.5 flex gap-3 cursor-pointer transition-all duration-200 hover:bg-accent/30 group ${
-      !n.is_read ? "bg-primary/[0.07] border-l-2 border-l-primary" : "border-l-2 border-l-transparent"
+    className={`px-4 py-3 flex gap-3 cursor-pointer transition-colors duration-150 ${
+      !n.is_read 
+        ? "bg-primary/[0.06] hover:bg-primary/[0.12]" 
+        : "hover:bg-accent/20"
     }`}
     onClick={() => {
       if (!n.is_read) onRead(n.id);
     }}
   >
-    {/* Icon */}
-    <div className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-      !n.is_read ? "bg-primary/10" : "bg-muted/50"
+    <div className={`mt-0.5 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+      !n.is_read ? "bg-primary/15" : "bg-muted"
     }`}>
       {getNotificationIcon(n.title)}
     </div>
 
     <div className="flex-1 min-w-0">
-      <div className="flex items-start justify-between gap-2">
-        <p className={`text-sm leading-tight ${
+      <div className="flex items-center justify-between gap-2">
+        <p className={`text-[13px] leading-snug truncate ${
           !n.is_read ? "font-semibold text-foreground" : "font-medium text-muted-foreground"
         }`}>
           {n.title}
         </p>
         {!n.is_read && (
-          <motion.div
-            animate={{ scale: [1, 1.3, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1.5"
-          />
+          <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
         )}
       </div>
-      <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
-      <p className="text-[10px] text-muted-foreground/50 mt-1.5 font-medium uppercase tracking-wider">
+      <p className="text-xs text-muted-foreground/70 mt-0.5 line-clamp-2 leading-relaxed">{n.message}</p>
+      <p className="text-[10px] text-muted-foreground/40 mt-1">
         {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
       </p>
     </div>
