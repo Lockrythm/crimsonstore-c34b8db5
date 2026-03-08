@@ -14,41 +14,38 @@ const getNotificationIcon = (title: string) => {
 const NotificationItem = ({ n, onRead }: { n: Notification; onRead: (id: string) => void }) => (
   <motion.div
     layout
-    initial={{ opacity: 0, x: 20 }}
-    animate={{ opacity: 1, x: 0 }}
-    exit={{ opacity: 0, x: -20 }}
+    initial={{ opacity: 0, y: 8 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -8 }}
     transition={{ type: "spring", stiffness: 400, damping: 30 }}
-    className={`p-3.5 flex gap-3 cursor-pointer transition-all duration-200 hover:bg-accent/30 group ${
-      !n.is_read ? "bg-primary/[0.07] border-l-2 border-l-primary" : "border-l-2 border-l-transparent"
+    className={`px-4 py-3 flex gap-3 cursor-pointer transition-colors duration-150 ${
+      !n.is_read 
+        ? "bg-primary/[0.06] hover:bg-primary/[0.12]" 
+        : "hover:bg-accent/20"
     }`}
     onClick={() => {
       if (!n.is_read) onRead(n.id);
     }}
   >
-    {/* Icon */}
-    <div className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-      !n.is_read ? "bg-primary/10" : "bg-muted/50"
+    <div className={`mt-0.5 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+      !n.is_read ? "bg-primary/15" : "bg-muted"
     }`}>
       {getNotificationIcon(n.title)}
     </div>
 
     <div className="flex-1 min-w-0">
-      <div className="flex items-start justify-between gap-2">
-        <p className={`text-sm leading-tight ${
+      <div className="flex items-center justify-between gap-2">
+        <p className={`text-[13px] leading-snug truncate ${
           !n.is_read ? "font-semibold text-foreground" : "font-medium text-muted-foreground"
         }`}>
           {n.title}
         </p>
         {!n.is_read && (
-          <motion.div
-            animate={{ scale: [1, 1.3, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1.5"
-          />
+          <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
         )}
       </div>
-      <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{n.message}</p>
-      <p className="text-[10px] text-muted-foreground/50 mt-1.5 font-medium uppercase tracking-wider">
+      <p className="text-xs text-muted-foreground/70 mt-0.5 line-clamp-2 leading-relaxed">{n.message}</p>
+      <p className="text-[10px] text-muted-foreground/40 mt-1">
         {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
       </p>
     </div>
@@ -117,43 +114,40 @@ const NotificationBell = () => {
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.95 }}
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.95 }}
+            exit={{ opacity: 0, y: -8, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className="absolute right-0 top-full mt-2 w-[340px] max-h-[28rem] flex flex-col bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl shadow-black/40 z-50 overflow-hidden"
+            className="fixed right-3 top-14 w-[calc(100vw-1.5rem)] max-w-[360px] max-h-[70vh] flex flex-col bg-card border border-border rounded-xl shadow-2xl shadow-black/50 z-50 overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border/50 bg-card">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
               <div className="flex items-center gap-2">
-                <Bell size={16} className="text-primary" />
-                <h3 className="font-gothic text-sm text-foreground tracking-wide">Notifications</h3>
+                <Bell size={15} className="text-primary" />
+                <h3 className="text-sm font-semibold text-foreground">Notifications</h3>
                 {unreadCount > 0 && (
-                  <span className="text-[10px] bg-primary/15 text-primary px-2 py-0.5 rounded-full font-semibold">
-                    {unreadCount} new
+                  <span className="text-[10px] bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-semibold">
+                    {unreadCount}
                   </span>
                 )}
               </div>
               {unreadCount > 0 && (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <button
                   onClick={() => markAllAsRead.mutate()}
                   className="text-[11px] text-primary hover:text-primary/80 flex items-center gap-1 font-medium transition-colors"
                 >
                   <CheckCheck size={13} />
-                  Read all
-                </motion.button>
+                  Mark all read
+                </button>
               )}
             </div>
 
             {/* List */}
-            <div className="overflow-y-auto flex-1 overscroll-contain">
+            <div className="overflow-y-auto flex-1 overscroll-contain divide-y divide-border/30">
               {notifications.length === 0 ? (
                 <div className="p-8 text-center">
-                  <BellOff size={32} className="mx-auto mb-3 text-muted-foreground/30" />
-                  <p className="text-sm text-muted-foreground/60 font-medium">No notifications yet</p>
-                  <p className="text-xs text-muted-foreground/40 mt-1">We'll notify you when something happens</p>
+                  <BellOff size={28} className="mx-auto mb-2 text-muted-foreground/30" />
+                  <p className="text-sm text-muted-foreground/60">No notifications yet</p>
                 </div>
               ) : (
                 <AnimatePresence>
@@ -170,9 +164,9 @@ const NotificationBell = () => {
 
             {/* Footer */}
             {notifications.length > 0 && (
-              <div className="px-4 py-2.5 border-t border-border/50 bg-card">
-                <p className="text-[10px] text-muted-foreground/40 text-center uppercase tracking-widest">
-                  Showing latest {notifications.length} notifications
+              <div className="px-4 py-2 border-t border-border bg-muted/20">
+                <p className="text-[10px] text-muted-foreground/40 text-center">
+                  {notifications.length} notifications
                 </p>
               </div>
             )}
