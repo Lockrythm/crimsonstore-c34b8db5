@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ShoppingCart, Check, MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, ShoppingCart, Check, MessageSquare, Phone } from "lucide-react";
+import { useState, useEffect } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
