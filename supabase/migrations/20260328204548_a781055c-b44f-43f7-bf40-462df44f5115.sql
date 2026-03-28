@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN contact_info TEXT, ADD COLUMN contact_public BOOLEAN NOT NULL DEFAULT false;
