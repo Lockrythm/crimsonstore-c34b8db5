@@ -130,7 +130,7 @@ const Sell = () => {
       });
       
       setListingType("");
-      setFormData({ title: "", price: "", category: "", description: "" });
+      setFormData({ title: "", price: "", category: "", description: "", contact: "", contactPublic: false });
       setImagePreview(null);
       setImageFile(null);
     } catch (error: any) {
