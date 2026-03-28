@@ -194,6 +194,19 @@ const ProductDetail = () => {
             </p>
           </div>
 
+          {/* Contact Info */}
+          {product.contact_info && (product.contact_public || isAdmin) && (
+            <div className="pt-4 border-t border-border">
+              <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                <Phone size={18} /> Contact
+                {!product.contact_public && isAdmin && (
+                  <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">Admin only</span>
+                )}
+              </h3>
+              <p className="text-muted-foreground">{product.contact_info}</p>
+            </div>
+          )}
+
           {/* Action Button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
