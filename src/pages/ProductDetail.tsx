@@ -18,7 +18,16 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [addedToCart, setAddedToCart] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' }).then(({ data }) => {
+      setIsAdmin(!!data);
+    });
+  }, [user]);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id],
