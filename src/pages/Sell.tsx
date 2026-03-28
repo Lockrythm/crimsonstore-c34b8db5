@@ -121,6 +121,7 @@ const Sell = () => {
         price: formData.price ? parseFloat(formData.price) : 0,
         image_url: imageUrl,
         type: listingType as "book" | "item" | "service" | "request",
+        ...(formData.contact ? { contact_info: formData.contact, contact_public: formData.contactPublic } : {}),
       });
       
       toast({
