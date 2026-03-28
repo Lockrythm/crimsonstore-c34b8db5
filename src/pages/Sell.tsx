@@ -39,6 +39,8 @@ const Sell = () => {
     price: "",
     category: "",
     description: "",
+    contact: "",
+    contactPublic: false,
   });
 
   // Get categories based on selected listing type
