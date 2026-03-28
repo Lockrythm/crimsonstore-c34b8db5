@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, Tag, FileText, Image, BookOpen, Package, Wrench, MessageSquare } from "lucide-react";
+import { Upload, Tag, FileText, Image, BookOpen, Package, Wrench, MessageSquare, Phone } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
