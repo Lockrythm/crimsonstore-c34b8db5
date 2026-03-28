@@ -9,6 +9,7 @@ import { useCart } from "@/hooks/useCart";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const ADMIN_PHONE = "03126203644";
 
