@@ -5,6 +5,7 @@ import { Upload, Tag, FileText, Image, BookOpen, Package, Wrench, MessageSquare,
 import AppLayout from "@/components/layout/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCategories, useBookCategories, useMarketplaceCategories, useServiceCategories, useRequestCategories } from "@/hooks/useCategories";
