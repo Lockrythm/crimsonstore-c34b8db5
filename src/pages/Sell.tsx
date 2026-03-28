@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, Tag, FileText, Image, BookOpen, Package, Wrench, MessageSquare } from "lucide-react";
+import { Upload, Tag, FileText, Image, BookOpen, Package, Wrench, MessageSquare, Phone } from "lucide-react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCategories, useBookCategories, useMarketplaceCategories, useServiceCategories, useRequestCategories } from "@/hooks/useCategories";
@@ -38,6 +39,8 @@ const Sell = () => {
     price: "",
     category: "",
     description: "",
+    contact: "",
+    contactPublic: false,
   });
 
   // Get categories based on selected listing type
@@ -118,6 +121,7 @@ const Sell = () => {
         price: formData.price ? parseFloat(formData.price) : 0,
         image_url: imageUrl,
         type: listingType as "book" | "item" | "service" | "request",
+        ...(formData.contact ? { contact_info: formData.contact, contact_public: formData.contactPublic } : {}),
       });
       
       toast({
@@ -126,7 +130,7 @@ const Sell = () => {
       });
       
       setListingType("");
-      setFormData({ title: "", price: "", category: "", description: "" });
+      setFormData({ title: "", price: "", category: "", description: "", contact: "", contactPublic: false });
       setImagePreview(null);
       setImageFile(null);
     } catch (error: any) {
@@ -338,6 +342,40 @@ const Sell = () => {
               className="bg-card border-border focus:border-primary min-h-[120px]"
               required
             />
+          </motion.div>
+
+          {/* Contact (Optional) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.65 }}
+          >
+            <label className="block text-sm text-muted-foreground mb-2">
+              <Phone size={14} className="inline mr-1" /> Contact (Optional)
+            </label>
+            <Input
+              placeholder="Phone number or name for buyers to reach you"
+              value={formData.contact}
+              onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+              className="bg-card border-border focus:border-primary"
+            />
+            {formData.contact && (
+              <div className="flex items-center gap-2 mt-3 p-3 rounded-lg bg-card border border-border">
+                <Checkbox
+                  id="contact-public"
+                  checked={formData.contactPublic}
+                  onCheckedChange={(checked) => setFormData({ ...formData, contactPublic: !!checked })}
+                />
+                <label htmlFor="contact-public" className="text-sm text-muted-foreground cursor-pointer">
+                  Make contact <span className="text-foreground font-medium">public</span> (visible to everyone)
+                </label>
+              </div>
+            )}
+            {formData.contact && !formData.contactPublic && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Contact will only be visible to admin
+              </p>
+            )}
           </motion.div>
 
           {/* Submit Button */}

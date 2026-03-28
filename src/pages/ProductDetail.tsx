@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, ShoppingCart, Check, MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, ShoppingCart, Check, MessageSquare, Phone } from "lucide-react";
+import { useState, useEffect } from "react";
 import AppLayout from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,6 +9,7 @@ import { useCart } from "@/hooks/useCart";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const ADMIN_PHONE = "03126203644";
 
@@ -17,7 +18,16 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [addedToCart, setAddedToCart] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' }).then(({ data }) => {
+      setIsAdmin(!!data);
+    });
+  }, [user]);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id],
@@ -183,6 +193,19 @@ const ProductDetail = () => {
               {product.description || "No description provided."}
             </p>
           </div>
+
+          {/* Contact Info */}
+          {product.contact_info && (product.contact_public || isAdmin) && (
+            <div className="pt-4 border-t border-border">
+              <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
+                <Phone size={18} /> Contact
+                {!product.contact_public && isAdmin && (
+                  <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">Admin only</span>
+                )}
+              </h3>
+              <p className="text-muted-foreground">{product.contact_info}</p>
+            </div>
+          )}
 
           {/* Action Button */}
           <motion.div
